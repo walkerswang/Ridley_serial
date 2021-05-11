@@ -263,7 +263,7 @@ subroutine FACs_to_fluxes(iModel, iBlock)
      end select
   endif
 
-  if (iModel.eq.4 .or. iModel.eq.5) then
+  if (iModel.eq.4 .or. iModel.eq.5 .or. iModel.eq.9) then
 
      ! Calculate grid spacing for conductance grid
      dlat = (cond_lats(1) - cond_lats(2))*cDegToRad
@@ -382,21 +382,38 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  polarcap = .true.
               endif
 
+              if (iModel.eq.9) then
+                 ! A simple linear relation between FAC and conductance was added by Zihan Wang. 20/26/2021.
+                 ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
+              
+                 !if (.not.polarcap .and. .not.UseSubOvalCond) then
+                 !   hal_a0 = hal_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 !   ped_a0 = ped_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 !endif
+                 
+                 hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
+                 ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+              endif
+
               if (iModel.eq.4) then
                  ! Implemented Feb. 7, 2007 as modified version of iModel 5 with
                  !    new narrower fitting of the auroral oval.  DDZ
-
+                 
                  hall=exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
                       hal_a0+(hal_a1-hal_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*hal_a2**2))
                  ped =exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
                       ped_a0+(ped_a1-ped_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*ped_a2**2))
-              else  ! iModel=5
+              endif
+                 
+              if (iModel.eq.5) then
                  !
                  ! We want minimal conductance lower than the oval
                  !
-
+                 
+                 ! decrease conductance equatorward of the center of the auroral oval.
+                 ! The decrease is slow down with a factor of 3.
                  if (.not.polarcap .and. .not.UseSubOvalCond) then
                     distance = distance/3.0
                     hal_a0 = hal_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
@@ -570,14 +587,32 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  polarcap = .true.
               endif
 
+              if (iModel.eq.9) then
+                 ! A simple linear relation between FAC and conductance was added by Zihan Wang. 20/26/2021.
+                 ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
+              
+                 !if (.not.polarcap .and. .not.UseSubOvalCond) then
+                 !   hal_a0 = hal_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 !   ped_a0 = ped_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 !endif
+                 
+                 hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
+                 ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+              endif
+
               if (iModel.eq.4) then
+                 ! Implemented Feb. 7, 2007 as modified version of iModel 5 with
+                 !    new narrower fitting of the auroral oval.  DDZ
+                 
                  hall=exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
                       hal_a0+(hal_a1-hal_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*hal_a2**2))
                  ped =exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
                       ped_a0+(ped_a1-ped_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*ped_a2**2))
-              else  ! iModel=5
+              endif
+                 
+              if (iModel.eq.5) then
                  ! Restrict FAC-related conductance outside auroral oval.
                  if (.not.polarcap .and. .not.UseSubOvalCond) then
                     distance = distance/3.0
@@ -2045,6 +2080,7 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
      SigmaThTh, SigmaThPs, SigmaPsPs,      &
      dSigmaThTh_dTheta, dSigmaThPs_dTheta, &
      dSigmaPsPs_dTheta,                    &
+
      dSigmaThTh_dPsi, dSigmaThPs_dPsi,     &
      dSigmaPsPs_dPsi,                      &
      Eflux, Ave_E,                         &
@@ -2142,10 +2178,28 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
 
         do j = 1, nPsi
            do i = 1, nTheta
-
+              
               Sigma0(i,j) = 1000.00
               SigmaH(i,j) = 0.00
               SigmaP(i,j) = StarLightPedConductance
+
+           enddo
+        enddo
+
+     endif
+
+     if (iModel.eq.10) then
+
+        do j = 1, nPsi
+           do i = 1, nTheta
+              if (north) then
+                 SigmaP(i,j) = PedConductance_North
+              else
+                 SigmaP(i,j) = PedConductance_South
+              endif
+
+              Sigma0(i,j) = 1000.00
+              SigmaH(i,j) = 0.00
 
            enddo
         enddo
@@ -2212,7 +2266,7 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
 
      endif
 
-     if (iModel.ge.3) then
+     if ((iModel.ge.3) .and. (iModel.ne.10)) then
 
         do j = 1, nPsi
            do i = 1, nTheta
