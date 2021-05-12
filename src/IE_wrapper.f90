@@ -193,8 +193,10 @@ contains
             call read_var('F10.7 Flux',f107_flux)
             call read_var('StarLightPedConductance',StarLightPedConductance)
             call read_var('PolarCapPedConductance',PolarCapPedConductance)
-            call read_var('PedConductance_North',PedConductance_North)
-            call read_var('PedConductance_South',PedConductance_South)
+            if (conductance_model.eq.10) then 
+               call read_var('PedConductance_North',PedConductance_North)
+               call read_var('PedConductance_South',PedConductance_South)
+            endif
          case('#USECMEE')
             call read_var('UseCMEEFitting', UseCMEEFitting)
             if (UseCMEEFitting) then
