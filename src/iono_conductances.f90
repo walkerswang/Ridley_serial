@@ -385,14 +385,13 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               if (iModel.eq.9) then
                  ! A simple linear relation between FAC and conductance was added by Zihan Wang. 20/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
-              
-                 !if (.not.polarcap .and. .not.UseSubOvalCond) then
-                 !   hal_a0 = hal_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 !   ped_a0 = ped_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 !endif
                  
                  hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
                  ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+
+                 distance=distance/2.0
+                 hall=hall*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 ped=ped*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
               endif
 
               if (iModel.eq.4) then
@@ -590,14 +589,13 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               if (iModel.eq.9) then
                  ! A simple linear relation between FAC and conductance was added by Zihan Wang. 20/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
-              
-                 !if (.not.polarcap .and. .not.UseSubOvalCond) then
-                 !   hal_a0 = hal_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 !   ped_a0 = ped_a0 * exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 !endif
                  
                  hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
                  ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+
+                 distance=distance/2.0
+                 hall=hall*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 ped=ped*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
               endif
 
               if (iModel.eq.4) then
