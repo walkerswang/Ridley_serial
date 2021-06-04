@@ -3,7 +3,8 @@
 !  For more information, see http://csem.engin.umich.edu/tools/swmf
 
 module IE_wrapper
-  ! Wrapper for Ridley's ionosphere
+
+  ! Wrapper for Ridley's ionosphere model RIM
 
   implicit none
 
@@ -37,6 +38,9 @@ module IE_wrapper
   ! Coupling with UA
   public:: IE_get_for_ua
   public:: IE_put_from_ua
+
+  ! Lookup table for F10.7 flux
+  integer:: iTableF107 = -100
 
 contains
   !============================================================================
@@ -1171,10 +1175,11 @@ contains
 
     ! Initialize the Ionosphere Electrostatic (IE) module for session iSession
 
-    use CON_physics,   ONLY: get_time, get_planet, get_axes
-    use ModIonosphere, ONLY: IONO_Bdp, init_mod_ionosphere
-    use IE_ModMain,    ONLY: time_accurate, time_simulation, ThetaTilt
-    use IE_ModIo,      ONLY: dt_output, t_output_last
+    use CON_physics,    ONLY: get_time, get_planet, get_axes
+    use ModIonosphere,  ONLY: IONO_Bdp, init_mod_ionosphere
+    use IE_ModMain,     ONLY: time_accurate, time_simulation, ThetaTilt
+    use IE_ModIo,       ONLY: dt_output, t_output_last
+    use ModLookupTable, ONLY: i_lookup_table
     use ModProcIE
 
     !INPUT PARAMETERS:
@@ -1188,9 +1193,9 @@ contains
 
     logical :: IsUninitialized=.true.
 
-    logical :: DoTest,DoTestMe
+    logical :: DoTest, DoTestMe
     !--------------------------------------------------------------------------
-    call CON_set_do_test(NameSub,DoTest,DoTestMe)
+    call CON_set_do_test(NameSub, DoTest, DoTestMe)
 
     if(IsUninitialized)then
        call init_mod_ionosphere
@@ -1206,7 +1211,7 @@ contains
     call get_planet(DipoleStrengthOut = IONO_Bdp)
     call get_axes(tSimulation, MagAxisTiltGsmOut = ThetaTilt)
 
-    IONO_Bdp = IONO_Bdp*1.0e9 ! Tesla -> nT
+    IONO_Bdp = IONO_Bdp*1e9 ! Tesla -> nT
 
     if(DoTest)write(*,*)NameSub,': IONO_Bdp, ThetaTilt =',IONO_Bdp,ThetaTilt
 
@@ -1216,8 +1221,10 @@ contains
             t_output_last=int(time_simulation/dt_output)
     end if
 
-  end subroutine IE_init_session
+    ! Check to see if there is an F107 lookup table
+    iTableF107 = i_lookup_table('F107')
 
+  end subroutine IE_init_session
   !============================================================================
   subroutine IE_finalize(tSimulation)
 
@@ -1286,6 +1293,7 @@ contains
     use IE_ModMain
     use IE_ModIo, ONLY: DoRestart
     use CON_physics, ONLY: get_time, get_axes, time_real_to_int
+    use ModLookupTable, ONLY: interpolate_lookup_table
     use ModKind
 
     !INPUT/OUTPUT ARGUMENTS:
@@ -1294,7 +1302,7 @@ contains
     !INPUT ARGUMENTS:
     real, intent(in) :: tSimulationLimit ! simulation time not to be exceeded
 
-    real(Real8_) :: tStart
+    real(Real8_) :: tStart, tNow
     integer      :: nStep
 
     logical :: DoTest, DoTestMe
@@ -1302,8 +1310,8 @@ contains
     !--------------------------------------------------------------------------
     call CON_set_do_test(NameSub, DoTest, DoTestMe)
 
-    if(DoTest)write(*,*)NameSub,': iProc,tSimulation,tSimulationLimit=',&
-         iProc,tSimulation,tSimulationLimit
+    if(DoTest)write(*,*)NameSub,': iProc, tSimulation, tSimulationLimit=',&
+         iProc, tSimulation, tSimulationLimit
 
     ! Store the current time
     time_simulation = tSimulation
@@ -1340,20 +1348,28 @@ contains
     ! Check if we can have a reasonable magnetic field already
     call get_time(nStepOut=nStep)
 
-    if(DoTest)write(*,*)NameSub,': iProc,nStep = ',iProc,nStep
+    if(DoTest)write(*,*)NameSub,': iProc, nStep = ', iProc, nStep
 
     ! After the solve this input can be considered old
     IsNewInput = .false.
 
     ! Obtain the position of the magnetix axis
-    call get_axes(time_simulation, MagAxisTiltGsmOut=ThetaTilt)
+    call get_axes(tSimulation, MagAxisTiltGsmOut=ThetaTilt)
 
+    ! Get the current time
     call get_time(tStartOut=tStart)
-    call time_real_to_int(tStart + time_simulation, Time_Array)
+    tNow = tStart + tSimulation
+    call time_real_to_int(tNow, Time_Array)
 
+    ! get F10.7 from lookup table if available
+    if(iTableF107 > 0) &
+         call interpolate_lookup_table(iTableF107, tNow, f107_flux)
+
+    if(f107_flux < 0)call CON_stop(NameSub//': provide F10.7 value or table')
+    
     nSolve = nSolve + 1
 
-    if(DoTest)write(*,*) 'solve'
+    if(DoTest)write(*,'(a,f8.3)') ' solve with F10.7=', f107_flux
 
     ! Solve for the ionosphere potential
     call IE_solve
