@@ -590,8 +590,8 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  ! A simple linear relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
                  
-                 hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
-                 ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+                 hall=hal_a0+hal_a1*abs(iono_south_jr(i,j)*1.0e6)
+                 ped=ped_a0+ped_a1*abs(iono_south_jr(i,j)*1.0e6)
 
                  distance=distance/3.0
                  hall=hall*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
@@ -604,10 +604,10 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  
                  hall=exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
-                      hal_a0+(hal_a1-hal_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*hal_a2**2))
+                      hal_a0+(hal_a1-hal_a0)*exp(-abs(iono_south_jr(i,j)*1.0e9)*hal_a2**2))
                  ped =exp(-1.0*(distance/(OvalWidthFactor*Width_of_Oval(j)))**2) * &
                       CondFactor*( &
-                      ped_a0+(ped_a1-ped_a0)*exp(-abs(iono_north_jr(i,j)*1.0e9)*ped_a2**2))
+                      ped_a0+(ped_a1-ped_a0)*exp(-abs(iono_south_jr(i,j)*1.0e9)*ped_a2**2))
               endif
                  
               if (iModel.eq.5) then
