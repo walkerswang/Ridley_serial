@@ -151,6 +151,8 @@ subroutine ionosphere_fine_grid
         write(iUnitOut,'(a)') "Test linear relationship between FACs and conductance"
      case (10)
         write(iUnitOut, '(a)') "Test asymmetric conductance"
+     case (11)
+        write(iUnitOut, '(a)') "Test Bob Robinson's model"
      case default
         call CON_stop(NameSub//" IE_ERROR invalid conductance_model")
      end select
