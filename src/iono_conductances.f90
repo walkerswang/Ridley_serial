@@ -2774,7 +2774,12 @@ subroutine ADELPHI_Calc(jr,psi,hall,ped)
   ped_a1 = A_p1 + B_p1*cos(C_p1*cDegToRad+phi)
   
   ! I try to make sure all coefficients are positive. By Zihan Wang. 09/10/2021
-  hall=abs(hal_a0)+abs(hal_a1)*abs(jr*1.0e6)
-  ped=abs(ped_a0)+abs(ped_a1)*abs(jr*1.0e6)                 
-  
+  ! I also add a mask function. By Zihan Wang. 10/08/2021
+  if (abs(jr)>0.01) then
+     hall=hal_a0+hal_a1*jr*1.0e6
+     ped=ped_a0+ped_a1*jr*1.0e6
+  else                 
+     hall=0
+     ped=0
+  endif
 end subroutine ADELPHI_Calc
