@@ -414,7 +414,7 @@ contains
   subroutine IE_get_for_gm(Buffer_IIV, iSize, jSize, nVar, NameVar_I, &
        tSimulation)
 
-    ! Put variables listed in NameVar_I into the buffer
+    ! Put variables listed in NameVar_I into the buffe
 
     use ModProcIE
     use ModIonosphere
@@ -1292,10 +1292,6 @@ contains
     real, intent(in) :: tSimulationLimit ! simulation time not to be exceeded
 
     real(Real8_) :: tStart, tNow
-<<<<<<< HEAD
-=======
-    real         :: tNowReal
->>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
     integer      :: nStep
 
     logical :: DoTest, DoTestMe
@@ -1368,21 +1364,11 @@ contains
           iTableF107 = i_lookup_table('F107')
        end if
     end if
-<<<<<<< HEAD
 
     ! get F10.7 from lookup table if available
     if(iTableF107 > 0) &
          call interpolate_lookup_table(iTableF107, tNow, f107_flux)
 
-=======
-
-    ! get F10.7 from lookup table if available
-    if(iTableF107 > 0)then
-       tNowReal = tNow ! so it compiles with single precision
-       call interpolate_lookup_table(iTableF107, tNowReal, f107_flux)
-    end if
-
->>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
     if(f107_flux < 0) &
          call CON_stop(NameSub//': provide positive F10.7 value or table')
     

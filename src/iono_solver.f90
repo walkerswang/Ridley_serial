@@ -58,11 +58,7 @@ subroutine ionosphere_solver(iBlock, Jr, &
 
   use ModIonosphere
   use IE_ModMain, ONLY: &
-<<<<<<< HEAD
-       f107_flux, DoCoupleUaCurrent, LatBoundaryGm, LatBoundary, &
-=======
        f107_flux, DoCoupleUaCurrent, LatBoundary, &
->>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
        NameSolver, UsePreconditioner, UseInitialGuess, Tolerance, MaxIteration
   use IE_ModIo, ONLY: write_prefix, iUnitOut
   use ModLinearSolver, ONLY: gmres, bicgstab, prehepta, Uhepta, Lhepta
