@@ -638,7 +638,7 @@ contains
   !============================================================================
   subroutine IE_put_from_gm(Buffer_IIV, iSize, jSize, nVar)
 
-    use IE_ModMain, ONLY: IsNewInput, LatBoundaryGm
+    use IE_ModMain, ONLY: IsNewInput
     use ModProcIE
     use ModIonosphere
     use ModConductance, ONLY: GmRhoFloor, GmPFloor
@@ -665,8 +665,6 @@ contains
     where (Buffer_IIV(:,:,4) < GmPFloor  ) Buffer_IIV(:,:,4)=GmPFloor
     
     if (iProc == 0) then
-       LatBoundaryGm = Buffer_IIV(IONO_nTheta,1,1)
-       if(DoTest)write(*,*) "LatBoundary : ",LatBoundaryGm*180.0/3.1415926
        Iono_North_Jr = Buffer_IIV(1:IONO_nTheta,:,1)
        Iono_North_Jr(IONO_nTheta-1:IONO_nTheta,1) = 0.0
        if(nVar>1)then
@@ -679,8 +677,6 @@ contains
        end if
     endif
     if (iProc == nProc-1) then
-       LatBoundaryGm = Buffer_IIV(IONO_nTheta,1,1)
-       if(DoTest)write(*,*) "LatBoundary2 : ",LatBoundaryGm*180.0/3.1415926
        Iono_South_Jr = Buffer_IIV(IONO_nTheta:2*IONO_nTheta-1,:,1)
        Iono_South_Jr(1:2,1) = 0.0
        if(nVar>1)then
@@ -1296,6 +1292,10 @@ contains
     real, intent(in) :: tSimulationLimit ! simulation time not to be exceeded
 
     real(Real8_) :: tStart, tNow
+<<<<<<< HEAD
+=======
+    real         :: tNowReal
+>>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
     integer      :: nStep
 
     logical :: DoTest, DoTestMe
@@ -1368,11 +1368,21 @@ contains
           iTableF107 = i_lookup_table('F107')
        end if
     end if
+<<<<<<< HEAD
 
     ! get F10.7 from lookup table if available
     if(iTableF107 > 0) &
          call interpolate_lookup_table(iTableF107, tNow, f107_flux)
 
+=======
+
+    ! get F10.7 from lookup table if available
+    if(iTableF107 > 0)then
+       tNowReal = tNow ! so it compiles with single precision
+       call interpolate_lookup_table(iTableF107, tNowReal, f107_flux)
+    end if
+
+>>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
     if(f107_flux < 0) &
          call CON_stop(NameSub//': provide positive F10.7 value or table')
     

@@ -58,7 +58,11 @@ subroutine ionosphere_solver(iBlock, Jr, &
 
   use ModIonosphere
   use IE_ModMain, ONLY: &
+<<<<<<< HEAD
        f107_flux, DoCoupleUaCurrent, LatBoundaryGm, LatBoundary, &
+=======
+       f107_flux, DoCoupleUaCurrent, LatBoundary, &
+>>>>>>> a4ac0f4689a5bf0fffbc566f4c444e5030c2dac2
        NameSolver, UsePreconditioner, UseInitialGuess, Tolerance, MaxIteration
   use IE_ModIo, ONLY: write_prefix, iUnitOut
   use ModLinearSolver, ONLY: gmres, bicgstab, prehepta, Uhepta, Lhepta
@@ -109,11 +113,7 @@ subroutine ionosphere_solver(iBlock, Jr, &
   call timing_start('iono_solve')
   if(DoTest)write(*,*)'iono_solve starting'
 
-  if(DoTest)write(*,*)'North, LatBoundaryGm=',north,LatBoundaryGm, LatBoundary
-
-  if (LatBoundary > LatBoundaryGm - 5.1 * cDegToRad) &
-       LatBoundary = LatBoundaryGm - 5.1 * cDegToRad
-!  if (.not. DoCoupleUaCurrent) LatBoundary = LatBoundaryGm - 5.1 * cDegToRad
+  if(DoTest)write(*,*)'North, LatBoundary=',north, LatBoundary
 
   ! Count the points above the latitude boundary
   nThetaUsed = count(abs(cHalfPi-Theta(1:nTheta,1)) > LatBoundary)
