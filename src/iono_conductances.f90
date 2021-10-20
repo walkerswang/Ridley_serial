@@ -2775,11 +2775,11 @@ subroutine ADELPHI_Calc(jr,psi,hall,ped)
   
   ! I try to make sure all coefficients are positive. By Zihan Wang. 09/10/2021
   ! I also add a mask function. By Zihan Wang. 10/08/2021
-  if (abs(jr)>0.01) then
+  if (abs(jr*1.0e6)>0.01) then
      hall=hal_a0+hal_a1*jr*1.0e6
      ped=ped_a0+ped_a1*jr*1.0e6
   else                 
-     hall=0
-     ped=0
+     hall=3
+     ped=1.5
   endif
 end subroutine ADELPHI_Calc
