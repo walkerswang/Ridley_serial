@@ -35,8 +35,9 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
   real    :: aurora_peak_lat, eflux_peak_lon, ave_e_peak_lon
   real    :: aurora_peak_width, ave_e_peak
-  real    :: distance, mult_fac, ef, efp, mfc
-  real    :: hal_a0, hal_a1, hal_a2, ped_a0, ped_a1, ped_a2, hall, ped
+  real    :: distance, mult_fac, ef, efp, mfc, distance_neg
+  real    :: hal_a0, hal_a1, hal_a2, ped_a0, ped_a1, ped_a2, hall, ped, &
+       hal_a0_p, hal_a1_p, ped_a0_p, ped_a1_p, hal_a0_n, hal_a1_n, ped_a0_n, ped_a1_n
   real    :: dlat, dmlt, y1, y2, x1, x2
   real    :: day_colat, dusk_colat, midnight_colat, dawn_colat
   real    :: day_fac, dusk_fac, midnight_fac, dawn_fac
@@ -46,7 +47,7 @@ subroutine FACs_to_fluxes(iModel, iBlock)
   integer :: jlat, imlt
   integer :: i,j, n, nloc, nHalfSmooth
   real, dimension(1:IONO_nPsi) :: Strength_of_Oval,               &
-       Loc_of_Oval, Width_of_Oval
+       Loc_of_Oval, Width_of_Oval, Strength_of_Oval_Neg, Loc_of_Oval_Neg, Width_of_Oval_Neg
   logical :: polarcap, IsPeakFound, IsDone
   real :: Center, Width
   real :: f, MaxP, MaxT, MulFac_ae, MulFac_ef, MinWidth, ThetaOCB, AuroraWidth
@@ -328,6 +329,8 @@ subroutine FACs_to_fluxes(iModel, iBlock)
         else
            call Determine_Oval_Characteristics(IONO_NORTH_JR, IONO_NORTH_Theta,&
                 IONO_NORTH_Psi, Loc_of_Oval, Width_of_Oval,Strength_of_Oval)
+           call Determine_Oval_Characteristics(-IONO_NORTH_JR, IONO_NORTH_Theta,&
+                IONO_NORTH_Psi, Loc_of_Oval_Neg, Width_of_Oval_Neg,Strength_of_Oval_Neg)
         end if
 
         do j = 1, IONO_nPsi
@@ -378,7 +381,7 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  ped_a2 = x1*y1*ped_a2_up(imlt  ,jlat  ) + &
                       x2*y1*ped_a2_up(imlt+1,jlat  ) + &
                       x1*y2*ped_a2_up(imlt  ,jlat+1) + &
-                      x2*y2*ped_a2_up(imlt+1,jlat+1)
+                      x2*y2*ped_a2_up(imlt+1,jlat+1)                 
 
               else
 
@@ -414,12 +417,53 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
               endif
 
-              ! "Distance" sets if auroral oval is used/relevant.
+              hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
+                      x2*y1*hal_a0_up(imlt+1,jlat  ) + &
+                      x1*y2*hal_a0_up(imlt  ,jlat+1) + &
+                      x2*y2*hal_a0_up(imlt+1,jlat+1)
+
+              hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
+                   x2*y1*hal_a1_up(imlt+1,jlat  ) + &
+                   x1*y2*hal_a1_up(imlt  ,jlat+1) + &
+                   x2*y2*hal_a1_up(imlt+1,jlat+1)
+
+              ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
+                   x2*y1*ped_a0_up(imlt+1,jlat  ) + &
+                   x1*y2*ped_a0_up(imlt  ,jlat+1) + &
+                   x2*y2*ped_a0_up(imlt+1,jlat+1)
+
+              ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
+                   x2*y1*ped_a1_up(imlt+1,jlat  ) + &
+                   x1*y2*ped_a1_up(imlt  ,jlat+1) + &
+                   x2*y2*ped_a1_up(imlt+1,jlat+1)
+              
+              hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
+                   x2*y1*hal_a0_do(imlt+1,jlat  ) + &
+                   x1*y2*hal_a0_do(imlt  ,jlat+1) + &
+                   x2*y2*hal_a0_do(imlt+1,jlat+1)
+
+              hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
+                   x2*y1*hal_a1_do(imlt+1,jlat  ) + &
+                   x1*y2*hal_a1_do(imlt  ,jlat+1) + &
+                   x2*y2*hal_a1_do(imlt+1,jlat+1)
+
+              ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
+                   x2*y1*ped_a0_do(imlt+1,jlat  ) + &
+                   x1*y2*ped_a0_do(imlt  ,jlat+1) + &
+                   x2*y2*ped_a0_do(imlt+1,jlat+1)
+
+              ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
+                   x2*y1*ped_a1_do(imlt+1,jlat  ) + &
+                   x1*y2*ped_a1_do(imlt  ,jlat+1) + &
+                   x2*y2*ped_a1_do(imlt+1,jlat+1)
+              
+              !"Distance" sets if auroral oval is used/relevant.
               ! To turn off auroral oval, set to large negative number.
               ! This will put all locations in polar cap AND reduce
               ! impact of oval conductance to near-zero.
               if(UseOval)then
                  distance = (IONO_NORTH_Theta(i,j) - Loc_of_Oval(j))
+                 distance_neg = (IONO_NORTH_Theta(i,j) - Loc_of_Oval_neg(j))
               else
                  distance = -1E9
               end if
@@ -429,19 +473,35 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               else
                  polarcap = .true.
               endif
-
+              
               if (iModel.eq.9) then
                  ! A simple linear relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
+
+                 if (abs(strength_of_oval(j)*1.0e6)<0.05) then
+                    strength_of_oval(j)=0.05*1e-6
+                 endif
                  
-                 hall=hal_a0+hal_a1*abs(iono_north_jr(i,j)*1.0e6)
-                 ped=ped_a0+ped_a1*abs(iono_north_jr(i,j)*1.0e6)
+                 if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
+                    strength_of_oval_neg(j)=0.05*1e-6
+                 endif
+                
+                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/Width_of_Oval(j))**2)
+                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/Width_of_Oval(j))**2)
 
-                 distance=distance/3.0
-                 hall=hall*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 ped=ped*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 hall=hall+exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 ped=ped+exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+
+                 !if (abs(iono_north_jr(i,j)*1.0e6)>0.2) then
+                 if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
+                    hall = hall * (1.0  + abs(iono_north_jr(i,j)/strength_of_oval(j)))
+                 endif
+
+                 if (ped < exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
+                    ped = ped * (1.0  + abs(iono_north_jr(i,j)/strength_of_oval(j)))
+                 endif
               endif
-
+              
               if (iModel.eq.4) then
                  ! Implemented Feb. 7, 2007 as modified version of iModel 5 with
                  !    new narrower fitting of the auroral oval.  DDZ
@@ -532,13 +592,14 @@ subroutine FACs_to_fluxes(iModel, iBlock)
         else
            call Determine_Oval_Characteristics(IONO_SOUTH_JR, IONO_SOUTH_Theta,&
                 IONO_SOUTH_Psi, Loc_of_Oval, Width_of_Oval,Strength_of_Oval)
+           call Determine_Oval_Characteristics(-IONO_SOUTH_JR, IONO_SOUTH_Theta,&
+                IONO_SOUTH_Psi, Loc_of_Oval_neg, Width_of_Oval_neg,Strength_of_Oval_neg)
         end if
 
         Loc_of_Oval = cPI - Loc_of_Oval
 
         do j = 1, IONO_nPsi
            do i = 1, IONO_nTheta
-
 
               y1 = (cPi - IONO_SOUTH_Theta(i,j))/dlat + 1.0
               if (y1 > i_cond_nlats-1) then
@@ -621,9 +682,51 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
               endif
 
+              
+              hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
+                      x2*y1*hal_a0_up(imlt+1,jlat  ) + &
+                      x1*y2*hal_a0_up(imlt  ,jlat+1) + &
+                      x2*y2*hal_a0_up(imlt+1,jlat+1)
+
+              hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
+                   x2*y1*hal_a1_up(imlt+1,jlat  ) + &
+                   x1*y2*hal_a1_up(imlt  ,jlat+1) + &
+                   x2*y2*hal_a1_up(imlt+1,jlat+1)
+
+              ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
+                   x2*y1*ped_a0_up(imlt+1,jlat  ) + &
+                   x1*y2*ped_a0_up(imlt  ,jlat+1) + &
+                   x2*y2*ped_a0_up(imlt+1,jlat+1)
+
+              ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
+                   x2*y1*ped_a1_up(imlt+1,jlat  ) + &
+                   x1*y2*ped_a1_up(imlt  ,jlat+1) + &
+                   x2*y2*ped_a1_up(imlt+1,jlat+1)
+              
+              hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
+                   x2*y1*hal_a0_do(imlt+1,jlat  ) + &
+                   x1*y2*hal_a0_do(imlt  ,jlat+1) + &
+                   x2*y2*hal_a0_do(imlt+1,jlat+1)
+
+              hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
+                   x2*y1*hal_a1_do(imlt+1,jlat  ) + &
+                   x1*y2*hal_a1_do(imlt  ,jlat+1) + &
+                   x2*y2*hal_a1_do(imlt+1,jlat+1)
+
+              ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
+                   x2*y1*ped_a0_do(imlt+1,jlat  ) + &
+                   x1*y2*ped_a0_do(imlt  ,jlat+1) + &
+                   x2*y2*ped_a0_do(imlt+1,jlat+1)
+
+              ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
+                   x2*y1*ped_a1_do(imlt+1,jlat  ) + &
+                   x1*y2*ped_a1_do(imlt  ,jlat+1) + &
+                   x2*y2*ped_a1_do(imlt+1,jlat+1)
+              
               ! Use "distance" to turn oval off/on (see above comment).
               if(UseOval)then
                  distance = (IONO_SOUTH_Theta(i,j) - Loc_of_Oval(j))
+                 distance_neg = (IONO_SOUTH_Theta(i,j) - Loc_of_Oval_neg(j))
               else
                  distance = 1E9 ! Switch sign for southern hemisphere.
               end if
@@ -637,13 +740,28 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               if (iModel.eq.9) then
                  ! A simple linear relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
+                 if (abs(strength_of_oval(j)*1.0e6)<0.05) then
+                    strength_of_oval(j)=0.05*1e-6
+                 endif
+                 if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
+                    strength_of_oval_neg(j)=0.05*1e-6
+                 endif
                  
-                 hall=hal_a0+hal_a1*abs(iono_south_jr(i,j)*1.0e6)
-                 ped=ped_a0+ped_a1*abs(iono_south_jr(i,j)*1.0e6)
+                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/(Width_of_Oval(j)))**2)
+                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/(Width_of_Oval(j)))**2)
 
-                 distance=distance/3.0
-                 hall=hall*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
-                 ped=ped*exp(-(distance/(OvalWidthFactor*Width_of_Oval(j)))**2)
+                 hall=hall+exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 ped=ped+exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+
+                 !if (abs(iono_south_jr(i,j)*1.0e6)>0.2) then
+                 if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
+                    hall = hall * (1.0 + abs(iono_south_jr(i,j)/strength_of_oval(j))) 
+                 endif
+
+                 if (ped < exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
+                    ped = ped * (1.0  + abs(iono_south_jr(i,j)/strength_of_oval(j)))
+                 endif
+                 !endif
               endif
 
               if (iModel.eq.4) then
