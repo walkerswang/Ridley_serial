@@ -500,11 +500,11 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
                  !if (abs(iono_north_jr(i,j)*1.0e6)>0.2) then
                  if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                    hall = hall * (1.0  + abs(iono_north_jr(i,j)/strength_of_oval(j)))
+                    hall = exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
                  endif
 
                  if (ped < exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                    ped = ped * (1.0  + abs(iono_north_jr(i,j)/strength_of_oval(j)))
+                    ped = exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
                  endif
               endif
               
@@ -767,11 +767,11 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
                  !if (abs(iono_south_jr(i,j)*1.0e6)>0.2) then
                  if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                    hall = hall * (1.0 + abs(iono_south_jr(i,j)/strength_of_oval(j))) 
+                    hall = exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
                  endif
 
                  if (ped < exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                    ped = ped * (1.0  + abs(iono_south_jr(i,j)/strength_of_oval(j)))
+                    ped = exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
                  endif
                  !endif
               endif
@@ -2287,7 +2287,7 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
        Eflux, Ave_E,                                            &
        Theta, Psi, sin_clat, cos_clat, sin_lon, cos_lon, cy,    &
        oSigmaH, oSigmaP, conv_SigmaH, conv_SigmaP, cos_SZA,     &
-       tmp_x, tmp_y, tmp_z
+       tmp_x, tmp_y, tmp_z, tmp_sigp, tmp_sigh
 
   real, dimension(1:IONO_NTheta) :: dTheta
   real, dimension(1:IONO_NPsi)   :: dPsi
@@ -2501,6 +2501,20 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
 
      endif
 
+     if (iModel.eq.9) then
+
+        do j = 1, nPsi
+           do i = 2, nTheta-1
+              tmp_sigp(i,j)=(sigmap(i-1,j)+sigmap(i,j)+sigmap(i+1,j))/3
+              tmp_sigh(i,j)=(sigmah(i-1,j)+sigmah(i,j)+sigmah(i+1,j))/3
+           enddo
+        enddo
+
+        sigmap=tmp_sigp
+        sigmah=tmp_sigh
+
+     endif
+        
      if (north) then
 
         ! Subsolar is i=nTheta ; j = 0
