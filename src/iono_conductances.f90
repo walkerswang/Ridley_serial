@@ -486,11 +486,17 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                     strength_of_oval_neg(j)=0.05*1e-6
                  endif
                 
-                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/Width_of_Oval(j))**2)
-                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/Width_of_Oval(j))**2)
+                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
+                      *exp(-0.5*(distance/Width_of_Oval(j))**2)
+                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
+                      *exp(-0.5*(distance/Width_of_Oval(j))**2)
 
-                 hall=hall+exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
-                 ped=ped+exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 hall=sqrt(hall**2&
+                      +exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)**2)
+                 ped=sqrt(ped**2&
+                      +exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)**2)
 
                  !if (abs(iono_north_jr(i,j)*1.0e6)>0.2) then
                  if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
@@ -747,11 +753,17 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                     strength_of_oval_neg(j)=0.05*1e-6
                  endif
                  
-                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/(Width_of_Oval(j)))**2)
-                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))*exp(-0.5*(distance/(Width_of_Oval(j)))**2)
+                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
+                      *exp(-0.5*(distance/(Width_of_Oval(j)))**2)
+                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
+                      *exp(-0.5*(distance/(Width_of_Oval(j)))**2)
 
-                 hall=hall+exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
-                 ped=ped+exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))*exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 hall=sqrt(hall**2&
+                      +exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)**2)
+                 ped=sqrt(ped**2&
+                      +exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)**2)
 
                  !if (abs(iono_south_jr(i,j)*1.0e6)>0.2) then
                  if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
