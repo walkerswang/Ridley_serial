@@ -1,10 +1,13 @@
 HALL CONDUCTANCE COEFFICIENTS
-From RIDLEY ET AL (2004)
+From WANG and ZOU ET AL (2022)
 
 #DIMENSIONS
 24	nMlt
 16	nLat
 
+Lat	MLT	A0_up	A0_do	A1_up	A1_do	A2_up	A2_do
+
+#START
 90.0    0.0     3.43    2.66    0.52    0.14    0.00    0.00    
 90.0    1.0     3.43    2.66    0.52    0.14    0.00    0.00    
 90.0    2.0     3.43    2.66    0.52    0.14    0.00    0.00    
