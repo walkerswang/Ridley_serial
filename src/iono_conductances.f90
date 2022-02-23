@@ -417,45 +417,45 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
               endif
 
-              hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
-                      x2*y1*hal_a0_up(imlt+1,jlat  ) + &
-                      x1*y2*hal_a0_up(imlt  ,jlat+1) + &
-                      x2*y2*hal_a0_up(imlt+1,jlat+1)
+              !hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
+              !        x2*y1*hal_a0_up(imlt+1,jlat  ) + &
+              !        x1*y2*hal_a0_up(imlt  ,jlat+1) + &
+              !        x2*y2*hal_a0_up(imlt+1,jlat+1)
 
-              hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
-                   x2*y1*hal_a1_up(imlt+1,jlat  ) + &
-                   x1*y2*hal_a1_up(imlt  ,jlat+1) + &
-                   x2*y2*hal_a1_up(imlt+1,jlat+1)
+              !hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
+              !     x2*y1*hal_a1_up(imlt+1,jlat  ) + &
+              !     x1*y2*hal_a1_up(imlt  ,jlat+1) + &
+              !     x2*y2*hal_a1_up(imlt+1,jlat+1)
 
-              ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
-                   x2*y1*ped_a0_up(imlt+1,jlat  ) + &
-                   x1*y2*ped_a0_up(imlt  ,jlat+1) + &
-                   x2*y2*ped_a0_up(imlt+1,jlat+1)
+              !ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
+              !     x2*y1*ped_a0_up(imlt+1,jlat  ) + &
+              !     x1*y2*ped_a0_up(imlt  ,jlat+1) + &
+              !     x2*y2*ped_a0_up(imlt+1,jlat+1)
 
-              ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
-                   x2*y1*ped_a1_up(imlt+1,jlat  ) + &
-                   x1*y2*ped_a1_up(imlt  ,jlat+1) + &
-                   x2*y2*ped_a1_up(imlt+1,jlat+1)
+              !ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
+              !     x2*y1*ped_a1_up(imlt+1,jlat  ) + &
+              !     x1*y2*ped_a1_up(imlt  ,jlat+1) + &
+              !     x2*y2*ped_a1_up(imlt+1,jlat+1)
               
-              hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
-                   x2*y1*hal_a0_do(imlt+1,jlat  ) + &
-                   x1*y2*hal_a0_do(imlt  ,jlat+1) + &
-                   x2*y2*hal_a0_do(imlt+1,jlat+1)
+              !hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
+              !     x2*y1*hal_a0_do(imlt+1,jlat  ) + &
+              !     x1*y2*hal_a0_do(imlt  ,jlat+1) + &
+              !     x2*y2*hal_a0_do(imlt+1,jlat+1)
 
-              hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
-                   x2*y1*hal_a1_do(imlt+1,jlat  ) + &
-                   x1*y2*hal_a1_do(imlt  ,jlat+1) + &
-                   x2*y2*hal_a1_do(imlt+1,jlat+1)
+              !hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
+              !     x2*y1*hal_a1_do(imlt+1,jlat  ) + &
+              !     x1*y2*hal_a1_do(imlt  ,jlat+1) + &
+              !     x2*y2*hal_a1_do(imlt+1,jlat+1)
 
-              ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
-                   x2*y1*ped_a0_do(imlt+1,jlat  ) + &
-                   x1*y2*ped_a0_do(imlt  ,jlat+1) + &
-                   x2*y2*ped_a0_do(imlt+1,jlat+1)
+              !ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
+              !     x2*y1*ped_a0_do(imlt+1,jlat  ) + &
+              !     x1*y2*ped_a0_do(imlt  ,jlat+1) + &
+              !     x2*y2*ped_a0_do(imlt+1,jlat+1)
 
-              ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
-                   x2*y1*ped_a1_do(imlt+1,jlat  ) + &
-                   x1*y2*ped_a1_do(imlt  ,jlat+1) + &
-                   x2*y2*ped_a1_do(imlt+1,jlat+1)
+              !ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
+              !     x2*y1*ped_a1_do(imlt+1,jlat  ) + &
+              !     x1*y2*ped_a1_do(imlt  ,jlat+1) + &
+              !     x2*y2*ped_a1_do(imlt+1,jlat+1)
               
               !"Distance" sets if auroral oval is used/relevant.
               ! To turn off auroral oval, set to large negative number.
@@ -475,37 +475,34 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               endif
               
               if (iModel.eq.9) then
-                 ! A simple linear relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
+                 ! A simple power law relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
 
-                 if (abs(strength_of_oval(j)*1.0e6)<0.05) then
-                    strength_of_oval(j)=0.05*1e-6
-                 endif
+                 !if (abs(strength_of_oval(j)*1.0e6)<0.05) then
+                 !   strength_of_oval(j)=0.05*1e-6
+                 !endif
                  
-                 if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
-                    strength_of_oval_neg(j)=0.05*1e-6
-                 endif
+                 !if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
+                 !   strength_of_oval_neg(j)=0.05*1e-6
+                 !endif
                 
-                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
-                      *exp(-0.5*(distance/Width_of_Oval(j))**2)
-                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
-                      *exp(-0.5*(distance/Width_of_Oval(j))**2)
-
-                 hall=hall&
-                      +exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
-                 ped=ped&
-                      +exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 hall=exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
+                 ped=exp(ped_a0+ped_a1*log(abs(iono_north(i,j)*1.0e6)))
+                 !hall=sqrt(hall**2&
+                 !     +(exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
+                 !ped=sqrt(ped**2&
+                 !     +(exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
 
                  !if (abs(iono_north_jr(i,j)*1.0e6)>0.2) then
-                 if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                    hall = exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 endif
+                 !if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
+                 !   hall = exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
+                 !endif
 
-                 if (ped < exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                    ped = exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 endif
+                 !if (ped < exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
+                 !  ped = exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
+                 !endif
               endif
               
               if (iModel.eq.4) then
@@ -744,35 +741,33 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               endif
 
               if (iModel.eq.9) then
-                 ! A simple linear relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
+                 ! A simple power law relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
-                 if (abs(strength_of_oval(j)*1.0e6)<0.05) then
-                    strength_of_oval(j)=0.05*1e-6
-                 endif
-                 if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
-                    strength_of_oval_neg(j)=0.05*1e-6
-                 endif
+                 !if (abs(strength_of_oval(j)*1.0e6)<0.05) then
+                 !   strength_of_oval(j)=0.05*1e-6
+                 !endif
+                 !if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
+                 !   strength_of_oval_neg(j)=0.05*1e-6
+                 !endif
                  
-                 hall=exp(hal_a0_p+hal_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
-                      *exp(-0.5*(distance/(Width_of_Oval(j)))**2)
-                 ped=exp(ped_a0_p+ped_a1_p*log(abs(strength_of_oval(j)*1.0e6)))&
-                      *exp(-0.5*(distance/(Width_of_Oval(j)))**2)
+                 hall=exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
+                 ped=exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
 
-                 hall=hall&
-                      +exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
-                 ped=ped&
-                      +exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                      *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2)
+                 !hall=sqrt(hall**2&
+                 !     +(exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
+                 !ped=sqrt(ped**2&
+                 !     +(exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
+                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
 
                  !if (abs(iono_south_jr(i,j)*1.0e6)>0.2) then
-                 if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                    hall = exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
-                 endif
+                 !if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
+                 !   hall = exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
+                 !endif
 
-                 if (ped < exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                    ped = exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
-                 endif
+                 !if (ped < exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
+                 !   ped = exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
+                 !endif
                  !endif
               endif
 
@@ -2501,17 +2496,17 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
 
      endif
 
-     if (iModel.eq.9) then
+     !if (iModel.eq.9) then
 
-        do j = 1, nPsi
-           do i = 2, nTheta-1
-              tmp_sigp(i,j)=(sigmap(i-1,j)+sigmap(i,j)+sigmap(i+1,j))/3
-              tmp_sigh(i,j)=(sigmah(i-1,j)+sigmah(i,j)+sigmah(i+1,j))/3
-           enddo
-        enddo
+     !   do j = 1, nPsi
+     !      do i = 2, nTheta-1
+     !         tmp_sigp(i,j)=(sigmap(i-1,j)+sigmap(i,j)+sigmap(i+1,j))/3
+     !         tmp_sigh(i,j)=(sigmah(i-1,j)+sigmah(i,j)+sigmah(i+1,j))/3
+     !      enddo
+     !   enddo
 
-        sigmap=tmp_sigp
-        sigmah=tmp_sigh
+     !   sigmap=tmp_sigp
+     !   sigmah=tmp_sigh
 
      endif
         
