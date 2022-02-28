@@ -278,6 +278,10 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               
               call ADELPHI_Calc(iono_north_jr(i,j),IONO_NORTH_Psi(i,j),hall,ped)
               
+              if (abs(90 - IONO_NORTH_Theta(i,j)*cRadToDeg) <= 50) then
+                 hall=0
+                 ped=0
+              end if
               
               if ((hall.gt.1.0).and.(ped.gt.0.5)) then
                  IONO_NORTH_Ave_E(i,j)  = ((hall/ped)/0.45)**(1.0/0.85)
@@ -297,6 +301,10 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               
               call ADELPHI_Calc(iono_south_jr(i,j),IONO_SOUTH_Psi(i,j),hall,ped)
               
+              if (abs(90 - IONO_SOUTH_Theta(i,j)*cRadToDeg) <= 50) then
+                 hall=0
+                 ped=0
+              end if
               
               if ((hall.gt.1.0).and.(ped.gt.0.5)) then
                  IONO_SOUTH_Ave_E(i,j)  = ((hall/ped)/0.45)**(1.0/0.85)
