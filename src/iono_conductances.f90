@@ -495,7 +495,7 @@ subroutine FACs_to_fluxes(iModel, iBlock)
                  !endif
                 
                  hall=exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 ped=exp(ped_a0+ped_a1*log(abs(iono_north(i,j)*1.0e6)))
+                 ped=exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
                  !hall=sqrt(hall**2&
                  !     +(exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
                  !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
@@ -2516,7 +2516,7 @@ subroutine ionosphere_conductance(Sigma0, SigmaH, SigmaP,               &
      !   sigmap=tmp_sigp
      !   sigmah=tmp_sigh
 
-     endif
+     !endif
         
      if (north) then
 
