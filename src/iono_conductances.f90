@@ -35,9 +35,8 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
   real    :: aurora_peak_lat, eflux_peak_lon, ave_e_peak_lon
   real    :: aurora_peak_width, ave_e_peak
-  real    :: distance, mult_fac, ef, efp, mfc, distance_neg
-  real    :: hal_a0, hal_a1, hal_a2, ped_a0, ped_a1, ped_a2, hall, ped, &
-       hal_a0_p, hal_a1_p, ped_a0_p, ped_a1_p, hal_a0_n, hal_a1_n, ped_a0_n, ped_a1_n
+  real    :: distance, mult_fac, ef, efp, mfc
+  real    :: hal_a0, hal_a1, hal_a2, ped_a0, ped_a1, ped_a2, hall, ped
   real    :: dlat, dmlt, y1, y2, x1, x2
   real    :: day_colat, dusk_colat, midnight_colat, dawn_colat
   real    :: day_fac, dusk_fac, midnight_fac, dawn_fac
@@ -47,7 +46,7 @@ subroutine FACs_to_fluxes(iModel, iBlock)
   integer :: jlat, imlt
   integer :: i,j, n, nloc, nHalfSmooth
   real, dimension(1:IONO_nPsi) :: Strength_of_Oval,               &
-       Loc_of_Oval, Width_of_Oval, Strength_of_Oval_Neg, Loc_of_Oval_Neg, Width_of_Oval_Neg
+       Loc_of_Oval, Width_of_Oval
   logical :: polarcap, IsPeakFound, IsDone
   real :: Center, Width
   real :: f, MaxP, MaxT, MulFac_ae, MulFac_ef, MinWidth, ThetaOCB, AuroraWidth
@@ -337,8 +336,6 @@ subroutine FACs_to_fluxes(iModel, iBlock)
         else
            call Determine_Oval_Characteristics(IONO_NORTH_JR, IONO_NORTH_Theta,&
                 IONO_NORTH_Psi, Loc_of_Oval, Width_of_Oval,Strength_of_Oval)
-           call Determine_Oval_Characteristics(-IONO_NORTH_JR, IONO_NORTH_Theta,&
-                IONO_NORTH_Psi, Loc_of_Oval_Neg, Width_of_Oval_Neg,Strength_of_Oval_Neg)
         end if
 
         do j = 1, IONO_nPsi
@@ -425,53 +422,12 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
               endif
 
-              !hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
-              !        x2*y1*hal_a0_up(imlt+1,jlat  ) + &
-              !        x1*y2*hal_a0_up(imlt  ,jlat+1) + &
-              !        x2*y2*hal_a0_up(imlt+1,jlat+1)
-
-              !hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
-              !     x2*y1*hal_a1_up(imlt+1,jlat  ) + &
-              !     x1*y2*hal_a1_up(imlt  ,jlat+1) + &
-              !     x2*y2*hal_a1_up(imlt+1,jlat+1)
-
-              !ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
-              !     x2*y1*ped_a0_up(imlt+1,jlat  ) + &
-              !     x1*y2*ped_a0_up(imlt  ,jlat+1) + &
-              !     x2*y2*ped_a0_up(imlt+1,jlat+1)
-
-              !ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
-              !     x2*y1*ped_a1_up(imlt+1,jlat  ) + &
-              !     x1*y2*ped_a1_up(imlt  ,jlat+1) + &
-              !     x2*y2*ped_a1_up(imlt+1,jlat+1)
-              
-              !hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
-              !     x2*y1*hal_a0_do(imlt+1,jlat  ) + &
-              !     x1*y2*hal_a0_do(imlt  ,jlat+1) + &
-              !     x2*y2*hal_a0_do(imlt+1,jlat+1)
-
-              !hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
-              !     x2*y1*hal_a1_do(imlt+1,jlat  ) + &
-              !     x1*y2*hal_a1_do(imlt  ,jlat+1) + &
-              !     x2*y2*hal_a1_do(imlt+1,jlat+1)
-
-              !ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
-              !     x2*y1*ped_a0_do(imlt+1,jlat  ) + &
-              !     x1*y2*ped_a0_do(imlt  ,jlat+1) + &
-              !     x2*y2*ped_a0_do(imlt+1,jlat+1)
-
-              !ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
-              !     x2*y1*ped_a1_do(imlt+1,jlat  ) + &
-              !     x1*y2*ped_a1_do(imlt  ,jlat+1) + &
-              !     x2*y2*ped_a1_do(imlt+1,jlat+1)
-              
               !"Distance" sets if auroral oval is used/relevant.
               ! To turn off auroral oval, set to large negative number.
               ! This will put all locations in polar cap AND reduce
               ! impact of oval conductance to near-zero.
               if(UseOval)then
                  distance = (IONO_NORTH_Theta(i,j) - Loc_of_Oval(j))
-                 distance_neg = (IONO_NORTH_Theta(i,j) - Loc_of_Oval_neg(j))
               else
                  distance = -1E9
               end if
@@ -485,32 +441,10 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               if (iModel.eq.9) then
                  ! A simple power law relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
-
-                 !if (abs(strength_of_oval(j)*1.0e6)<0.05) then
-                 !   strength_of_oval(j)=0.05*1e-6
-                 !endif
-                 
-                 !if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
-                 !   strength_of_oval_neg(j)=0.05*1e-6
-                 !endif
                 
                  hall=exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
                  ped=exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 !hall=sqrt(hall**2&
-                 !     +(exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
-                 !ped=sqrt(ped**2&
-                 !     +(exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
-
-                 !if (abs(iono_north_jr(i,j)*1.0e6)>0.2) then
-                 !if (hall < exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                 !   hall = exp(hal_a0+hal_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 !endif
-
-                 !if (ped < exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))) then
-                 !  ped = exp(ped_a0+ped_a1*log(abs(iono_north_jr(i,j)*1.0e6)))
-                 !endif
+                 
               endif
               
               if (iModel.eq.4) then
@@ -603,8 +537,6 @@ subroutine FACs_to_fluxes(iModel, iBlock)
         else
            call Determine_Oval_Characteristics(IONO_SOUTH_JR, IONO_SOUTH_Theta,&
                 IONO_SOUTH_Psi, Loc_of_Oval, Width_of_Oval,Strength_of_Oval)
-           call Determine_Oval_Characteristics(-IONO_SOUTH_JR, IONO_SOUTH_Theta,&
-                IONO_SOUTH_Psi, Loc_of_Oval_neg, Width_of_Oval_neg,Strength_of_Oval_neg)
         end if
 
         Loc_of_Oval = cPI - Loc_of_Oval
@@ -693,51 +625,9 @@ subroutine FACs_to_fluxes(iModel, iBlock)
 
               endif
 
-              
-              hal_a0_p = x1*y1*hal_a0_up(imlt  ,jlat  ) + &
-                      x2*y1*hal_a0_up(imlt+1,jlat  ) + &
-                      x1*y2*hal_a0_up(imlt  ,jlat+1) + &
-                      x2*y2*hal_a0_up(imlt+1,jlat+1)
-
-              hal_a1_p = x1*y1*hal_a1_up(imlt  ,jlat  ) + &
-                   x2*y1*hal_a1_up(imlt+1,jlat  ) + &
-                   x1*y2*hal_a1_up(imlt  ,jlat+1) + &
-                   x2*y2*hal_a1_up(imlt+1,jlat+1)
-
-              ped_a0_p = x1*y1*ped_a0_up(imlt  ,jlat  ) + &
-                   x2*y1*ped_a0_up(imlt+1,jlat  ) + &
-                   x1*y2*ped_a0_up(imlt  ,jlat+1) + &
-                   x2*y2*ped_a0_up(imlt+1,jlat+1)
-
-              ped_a1_p = x1*y1*ped_a1_up(imlt  ,jlat  ) + &
-                   x2*y1*ped_a1_up(imlt+1,jlat  ) + &
-                   x1*y2*ped_a1_up(imlt  ,jlat+1) + &
-                   x2*y2*ped_a1_up(imlt+1,jlat+1)
-              
-              hal_a0_n = x1*y1*hal_a0_do(imlt  ,jlat  ) + &
-                   x2*y1*hal_a0_do(imlt+1,jlat  ) + &
-                   x1*y2*hal_a0_do(imlt  ,jlat+1) + &
-                   x2*y2*hal_a0_do(imlt+1,jlat+1)
-
-              hal_a1_n = x1*y1*hal_a1_do(imlt  ,jlat  ) + &
-                   x2*y1*hal_a1_do(imlt+1,jlat  ) + &
-                   x1*y2*hal_a1_do(imlt  ,jlat+1) + &
-                   x2*y2*hal_a1_do(imlt+1,jlat+1)
-
-              ped_a0_n = x1*y1*ped_a0_do(imlt  ,jlat  ) + &
-                   x2*y1*ped_a0_do(imlt+1,jlat  ) + &
-                   x1*y2*ped_a0_do(imlt  ,jlat+1) + &
-                   x2*y2*ped_a0_do(imlt+1,jlat+1)
-
-              ped_a1_n = x1*y1*ped_a1_do(imlt  ,jlat  ) + &
-                   x2*y1*ped_a1_do(imlt+1,jlat  ) + &
-                   x1*y2*ped_a1_do(imlt  ,jlat+1) + &
-                   x2*y2*ped_a1_do(imlt+1,jlat+1)
-              
               ! Use "distance" to turn oval off/on (see above comment).
               if(UseOval)then
                  distance = (IONO_SOUTH_Theta(i,j) - Loc_of_Oval(j))
-                 distance_neg = (IONO_SOUTH_Theta(i,j) - Loc_of_Oval_neg(j))
               else
                  distance = 1E9 ! Switch sign for southern hemisphere.
               end if
@@ -751,32 +641,10 @@ subroutine FACs_to_fluxes(iModel, iBlock)
               if (iModel.eq.9) then
                  ! A simple power law relation between FAC and conductance was added by Zihan Wang. 02/26/2021.
                  ! Conductance files in PARAM.IN needs to be changed. The format is the same. However, a2 will not be used.
-                 !if (abs(strength_of_oval(j)*1.0e6)<0.05) then
-                 !   strength_of_oval(j)=0.05*1e-6
-                 !endif
-                 !if (abs(strength_of_oval_neg(j)*1.0e6)<0.05) then
-                 !   strength_of_oval_neg(j)=0.05*1e-6
-                 !endif
                  
                  hall=exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
                  ped=exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
 
-                 !hall=sqrt(hall**2&
-                 !     +(exp(hal_a0_n+hal_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
-                 !ped=sqrt(ped**2&
-                 !     +(exp(ped_a0_n+ped_a1_n*log(abs(strength_of_oval_neg(j)*1.0e6)))&
-                 !     *exp(-0.5*(distance_neg/Width_of_Oval_neg(j))**2))**2)
-
-                 !if (abs(iono_south_jr(i,j)*1.0e6)>0.2) then
-                 !if (hall < exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                 !   hall = exp(hal_a0+hal_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
-                 !endif
-
-                 !if (ped < exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))) then
-                 !   ped = exp(ped_a0+ped_a1*log(abs(iono_south_jr(i,j)*1.0e6)))
-                 !endif
-                 !endif
               endif
 
               if (iModel.eq.4) then
