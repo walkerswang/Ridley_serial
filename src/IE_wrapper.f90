@@ -201,6 +201,10 @@ contains
             call read_var('F10.7 Flux',f107_flux)
             call read_var('StarLightPedConductance',StarLightPedConductance)
             call read_var('PolarCapPedConductance',PolarCapPedConductance)
+            if (conductance_model.eq.10) then 
+               call read_var('PedConductance_North',PedConductance_North)
+               call read_var('PedConductance_South',PedConductance_South)
+            endif
          case('#USECMEE')
             call read_var('UseCMEEFitting', UseCMEEFitting)
             if (UseCMEEFitting) then
@@ -344,6 +348,8 @@ contains
       UseFullCurrent          = .false.
       UseFakeRegion2          = .false.
       StarLightPedConductance = 0.25
+      PedConductance_North = 0.25
+      PedConductance_South = 0.25
       PolarCapPedConductance  = 0.25
       f107_flux               = 150.0
 
@@ -413,7 +419,7 @@ contains
   subroutine IE_get_for_gm(Buffer_IIV, iSize, jSize, nVar, NameVar_I, &
        tSimulation)
 
-    ! Put variables listed in NameVar_I into the buffer
+    ! Put variables listed in NameVar_I into the buffe
 
     use ModProcIE
     use ModIonosphere
@@ -1342,7 +1348,6 @@ contains
     real, intent(in) :: tSimulationLimit ! simulation time not to be exceeded
 
     real(Real8_) :: tStart, tNow
-    real         :: tNowReal
     integer      :: nStep
 
     logical :: DoTest, DoTestMe
@@ -1417,10 +1422,8 @@ contains
     end if
 
     ! get F10.7 from lookup table if available
-    if(iTableF107 > 0)then
-       tNowReal = tNow ! so it compiles with single precision
-       call interpolate_lookup_table(iTableF107, tNowReal, f107_flux)
-    end if
+    if(iTableF107 > 0) &
+         call interpolate_lookup_table(iTableF107, tNow, f107_flux)
 
     if(f107_flux < 0) &
          call CON_stop(NameSub//': provide positive F10.7 value or table')
